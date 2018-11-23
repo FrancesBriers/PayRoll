@@ -9,12 +9,12 @@ namespace CSProject
 {
     public interface IFactoryStaff
     {
-        Staff Create(string staffType, string name);
+        IStaff Create(string staffType, string name);
     }
 
     public class FactoryStaff : IFactoryStaff
     {
-        public Staff Create(string staffType, string name)
+        public IStaff Create(string staffType, string name)
         {
             if (staffType == "Manager")
                 return new Manager(name);

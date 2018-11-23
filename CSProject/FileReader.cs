@@ -6,7 +6,7 @@ namespace CSProject
 {
     public interface IFileReader
     {
-        List<Staff> ReadFile();
+        List<IStaff> ReadFile();
     }
 
     public class FileReader : IFileReader
@@ -18,9 +18,9 @@ namespace CSProject
             get { return StaffType; }
         }
 
-        public List<Staff> ReadFile()
+        public List<IStaff> ReadFile()
         {
-            List<Staff> myStaff = null;// = new List<Staff>();
+            List<IStaff> myStaff = null;// = new List<Staff>();
             string[] result = new string[2];
             string path = "C:\\staff.txt";
             string[] separator = { ", " };

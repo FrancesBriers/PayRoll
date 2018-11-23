@@ -1,26 +1,70 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Moq;
 using NUnit.Framework;
 
 namespace CSProject.UnitTests
 {
     [TestFixture]
-    public class UnitTests
+    public class StaffTypeTests
     {
-        [Test]
-        public void GivenManagerThenManagersAreCreated()
+
+
+
+        [TestCase("Manager","Joe")]
+        [TestCase("Admin","Sue")]
+        public void GivenManagerThenManagersAreCreated(string typeName, string name)
         {
-            var exampleData = "Joe, Manager";
+            var exampleData = $"{name}, {typeName}";
 
-            var fr = new FileReader();
+            var expectedStaff = new Mock<IStaff>();
 
-            var staff = fr.StaffType1.ReadFromStream(GenerateStreamFromString(exampleData));
+            var fakeFactoryStaff = new Mock<IFactoryStaff>();
+            fakeFactoryStaff
+                .Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(expectedStaff.Object);
+
+            var staffType = new StaffType(fakeFactoryStaff.Object);
+
+            var staff = staffType.ReadFromStream(GenerateStreamFromString(exampleData));
+
+            fakeFactoryStaff
+                .Verify(f => f.Create(typeName, name));
 
             Assert.That(staff.Count, Is.EqualTo(1));
-            Assert.That(staff[0], Is.InstanceOf<Manager>());
-            Assert.That(staff[0].NameOfStaff, Is.EqualTo("Joe"));
+            Assert.That(staff, Has.Member(expectedStaff.Object));
+        }
 
+        [Test]
+        public void GivenAPayRollFileFormatThenAListOFStaffIsCreated()
+        {
+            var name1 = "Joe";
+            var typeName1 = "Manager";
+            var name2 = "Sue";
+            var typeName2 = "Admin";
 
+            var exampleData = $"{name1}, {typeName1}" + Environment.NewLine +
+                              $"{name2}, {typeName2}";
+
+            var expectedStaff = new Mock<IStaff>();
+
+            var fakeFactoryStaff = new Mock<IFactoryStaff>();
+            fakeFactoryStaff
+                .Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(expectedStaff.Object);
+
+            var staffType = new StaffType(fakeFactoryStaff.Object);
+
+            var staff = staffType.ReadFromStream(GenerateStreamFromString(exampleData));
+
+            fakeFactoryStaff
+                .Verify(f => f.Create(typeName1, name1));
+            fakeFactoryStaff
+                .Verify(f => f.Create(typeName2, name2));
+
+            Assert.That(staff.Count, Is.EqualTo(2));
+            Assert.That(staff, Has.Member(expectedStaff.Object));
         }
 
         public static Stream GenerateStreamFromString(string s)
@@ -97,7 +141,7 @@ namespace CSProject.UnitTests
 
             var rate = (float)1.2;
             var staff = new Staff("Joe", rate);
-            List<Staff> myStaff = new List<Staff> {staff};
+            var myStaff = new List<IStaff> {staff};
             var fakeFileReader = new FakeFileReader(myStaff);
 
             PayRollProgram input = new PayRollProgram(fakeUserInput, fakeFileReader, new AlternateFactoryPaySlip(), new FactoryStaff());
@@ -119,7 +163,7 @@ namespace CSProject.UnitTests
 
             var rate = (float)1.2;
             var staff = new Staff("Joe", rate);
-            List<Staff> myStaff = new List<Staff> { staff };
+            var myStaff = new List<IStaff> { staff };
             var fakeFileReader = new FakeFileReader(myStaff);
 
             var paySlip = new PaySlip(1, 2000);
@@ -162,14 +206,14 @@ namespace CSProject.UnitTests
 
     class FakeFileReader : IFileReader
     {
-        private List<Staff> _staff;
+        private List<IStaff> _staff;
 
-        public FakeFileReader(List<Staff> staff)
+        public FakeFileReader(List<IStaff> staff)
         {
             _staff = staff;
         }
 
-        public List<Staff> ReadFile()
+        public List<IStaff> ReadFile()
         {
             return _staff;
         }

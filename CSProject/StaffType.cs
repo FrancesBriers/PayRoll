@@ -12,9 +12,9 @@ namespace CSProject
         {
             _staffFactory = staffFactory;
         }
-        public List<Staff> ReadFromStream(Stream stream)
+        public List<IStaff> ReadFromStream(Stream stream)
         {
-            List<Staff> myStaff = new List<Staff>();
+            var myStaff = new List<IStaff>();
             string[] separator = { ", " };
 
             using (var sr = new StreamReader(stream))
@@ -28,8 +28,8 @@ namespace CSProject
 
                         var staffType = result[1];
                         var name = result[0];
-
-                        myStaff.Add(_staffFactory.Create(staffType,name));
+                        
+                        myStaff.Add(_staffFactory.Create(staffType, name));
                     }
 
                     Console.WriteLine(line);

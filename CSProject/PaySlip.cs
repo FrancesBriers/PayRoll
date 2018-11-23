@@ -8,8 +8,8 @@ namespace CSProject
 {
     public interface IPaySlip
     {
-        void GeneratePaySlip(List<Staff> myStaff);
-        void GenerateSummary(List<Staff> myStaff);
+        void GeneratePaySlip(List<IStaff> myStaff);
+        void GenerateSummary(List<IStaff> myStaff);
         string ToString();
     }
 
@@ -31,11 +31,11 @@ namespace CSProject
             year = payYear;
         }
 
-        public void GeneratePaySlip(List<Staff> myStaff)
+        public void GeneratePaySlip(List<IStaff> myStaff)
         {
             string path;
 
-            foreach (Staff f in myStaff)
+            foreach (var f in myStaff)
             {
                 path = "C:\\" + f.NameOfStaff + ".txt";
                 using (StreamWriter sw = new StreamWriter(path)) 
@@ -65,7 +65,7 @@ namespace CSProject
 
         }
 
-        public void GenerateSummary(List<Staff> myStaff)
+        public void GenerateSummary(List<IStaff> myStaff)
         {
             var path = "C:\\Summary.txt";
             using (StreamWriter sw = new StreamWriter(path, true)) 

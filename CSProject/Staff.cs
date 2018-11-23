@@ -2,7 +2,16 @@
 
 namespace CSProject
 {
-    public class Staff
+    public interface IStaff
+    {
+        float TotalPay { get; }
+        float BasicPay { get; }
+        string NameOfStaff { get; }
+        int HoursWorked { get; set; }
+        void CalculatePay();
+    }
+
+    public class Staff : IStaff
     {
         //fields
         private float hourlyRate;
