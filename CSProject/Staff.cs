@@ -2,7 +2,7 @@
 
 namespace CSProject
 {
-    class Staff
+    public class Staff
     {
         //fields
         private float hourlyRate;

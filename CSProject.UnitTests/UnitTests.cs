@@ -1,14 +1,8 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework.Constraints;
+using NUnit.Framework;
 
-namespace CSProject
+namespace CSProject.UnitTests
 {
     [TestFixture]
     public class UnitTests
@@ -20,7 +14,7 @@ namespace CSProject
 
             var fr = new FileReader();
 
-            var staff = fr.ReadFromStream(GenerateStreamFromString(exampleData));
+            var staff = fr.StaffType1.ReadFromStream(GenerateStreamFromString(exampleData));
 
             Assert.That(staff.Count, Is.EqualTo(1));
             Assert.That(staff[0], Is.InstanceOf<Manager>());
@@ -106,7 +100,7 @@ namespace CSProject
             List<Staff> myStaff = new List<Staff> {staff};
             var fakeFileReader = new FakeFileReader(myStaff);
 
-            PayRollProgram input = new PayRollProgram(fakeUserInput, fakeFileReader);
+            PayRollProgram input = new PayRollProgram(fakeUserInput, fakeFileReader, new AlternateFactoryPaySlip(), new FactoryStaff());
 
             Assert.That(staff.TotalPay, Is.EqualTo(0));
 
@@ -116,10 +110,33 @@ namespace CSProject
 
             Assert.That(staff.TotalPay, Is.EqualTo(fakeUserInput.GetHoursWorked() * rate));
 
+        }
 
-           // var payslip = new PaySlip(fakeUserInput.Month, fakeUserInput.Year());
-            //Assert.That(payslip.ToString(), Is.EqualTo(2));
-           // Assert.That(payslip.GenerateSummary(new List<Staff>()), Is.EqualTo("text");
+        [Test]
+        public void WithFactory_GivenMonthAndYear_ReturnPaySlip()
+        {
+            var fakeUserInput = new FakeUserInput();
+
+            var rate = (float)1.2;
+            var staff = new Staff("Joe", rate);
+            List<Staff> myStaff = new List<Staff> { staff };
+            var fakeFileReader = new FakeFileReader(myStaff);
+
+            var paySlip = new PaySlip(1, 2000);
+
+            var fakeFactory = new FakeFactory(paySlip);
+            //FactoryPaySlip.SetCustomerPaySlip(paySlip);
+
+            PayRollProgram input = new PayRollProgram(fakeUserInput, fakeFileReader, new AlternateFactoryPaySlip(), new FactoryStaff());
+
+            Assert.That(staff.TotalPay, Is.EqualTo(0));
+
+            input.PayRoll();
+
+            Assert.That(staff.HoursWorked, Is.EqualTo(fakeUserInput.GetHoursWorked()));
+
+            Assert.That(staff.TotalPay, Is.EqualTo(fakeUserInput.GetHoursWorked() * rate));
+
         }
     }
 
@@ -159,5 +176,18 @@ namespace CSProject
     }
 
 
+    class FakeFactory : IAlternateFactoryPaySlip
+    {
+        private readonly PaySlip _stub;
 
+        public FakeFactory(PaySlip stub)
+        {
+            _stub = stub;
+        }
+        public IPaySlip Create(int month, int year)
+        {
+            return _stub;
+        }
+    }
+    
 }

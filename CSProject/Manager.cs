@@ -2,7 +2,7 @@
 
 namespace CSProject
 {
-    class Manager : Staff
+    public class Manager : Staff
     {
         //fields
         private const float managerHourlyRate = 50;

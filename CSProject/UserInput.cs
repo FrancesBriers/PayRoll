@@ -1,6 +1,6 @@
 using System;
 
-internal interface IUserInput
+public interface IUserInput
 {
     int Month { get; }
 
@@ -12,7 +12,7 @@ internal interface IUserInput
 }
 
 
-internal class UserInput : IUserInput
+public class UserInput : IUserInput
 {
     public int Month
     {

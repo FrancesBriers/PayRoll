@@ -2,7 +2,7 @@
 
 namespace CSProject
 {
-    class Admin : Staff
+    public class Admin : Staff
     {
         //fields
         private const float overtimeRate = 15.5f;

@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NUnit.Framework.Constraints;
+
 
 namespace CSProject
 {
-    class PaySlip
+    public interface IPaySlip
+    {
+        void GeneratePaySlip(List<Staff> myStaff);
+        void GenerateSummary(List<Staff> myStaff);
+        string ToString();
+    }
+
+    public class PaySlip : IPaySlip
     {
         //fields
         private int month;
